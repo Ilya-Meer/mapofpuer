@@ -3,13 +3,19 @@ import yunnan from '../../assets/yunnan.json';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import styles from './Map.module.css';
+import { TileServer } from '../../types';
 
 interface MapProps {
     center: [number, number];
     zoom: number;
+    tileServer: TileServer;
 }
 
-export function Map({ center, zoom }: MapProps) {
+export function Map({
+  center,
+  zoom,
+  tileServer
+}: MapProps) {
     const mapRef = useRef<HTMLDivElement>(null);
     const mapInstanceRef = useRef<L.Map | null>(null);
 
@@ -19,14 +25,10 @@ export function Map({ center, zoom }: MapProps) {
             const map = L.map(mapRef.current).setView(center, zoom);
             mapInstanceRef.current = map;
 
-            // Add base tile layer
-            // const baseLayer = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            //     maxZoom: 19,
-            //     attribution: '© OpenStreetMap'
-            const baseLayer = L.tileLayer('https://tiles.stadiamaps.com/tiles/alidade_smooth/{z}/{x}/{y}{r}.png', {
-                minZoom: 7,
+            const baseLayer = L.tileLayer(tileServer.url, {
+                minZoom: 6,
                 maxZoom: 12,
-                attribution: '&copy; <a href="https://stadiamaps.com/">Stadia Maps</a>'
+                attribution: tileServer.attribution
             }).addTo(map);
 
             baseLayer.on('loading', () => {
@@ -36,7 +38,7 @@ export function Map({ center, zoom }: MapProps) {
                 console.log('All tiles loaded!');
             });
 
-            // Create a masked version of the GeoJSON
+            // Create a masked version of the GeoJSON to grey out the area outside of Yunnan
             const maskedGeoJSON: GeoJSON.FeatureCollection = {
                 type: "FeatureCollection",
                 features: [{
@@ -78,12 +80,12 @@ export function Map({ center, zoom }: MapProps) {
                 }
             }).addTo(map);
 
-            // Add your original Yunnan region with just a border
+            // Add the Yunnan GeoJSON layer to show the boundary of Yunnan
             L.geoJSON(yunnan as GeoJSON.FeatureCollection, {
                 style: {
                     fillOpacity: 0,
                     stroke: true,
-                    color: 'black',
+                    color: '#1e1e1e',
                     weight: 1,
                     interactive: false
                 }
@@ -110,6 +112,7 @@ export function Map({ center, zoom }: MapProps) {
 
             // Add layer controls
             const overlays = {
+                "Tile Layer": baseLayer,
                 "Interactive Elements": interactiveLayer
             };
             baseLayer.on('tileload', (event) => {
@@ -122,7 +125,7 @@ export function Map({ center, zoom }: MapProps) {
             mapInstanceRef.current?.remove();
             mapInstanceRef.current = null;
         };
-    }, [center, zoom]);
+    }, [center, zoom, tileServer]);
 
     return <div ref={mapRef} className={styles.mapContainer} />;
 }

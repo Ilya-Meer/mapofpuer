@@ -1,0 +1,10 @@
+.appContainer {
+    margin: 0 auto;
+    width: 90vw;
+}
+
+.buttonContainer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+}
