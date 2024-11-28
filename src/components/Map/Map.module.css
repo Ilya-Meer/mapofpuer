@@ -1,7 +1,38 @@
 .mapContainer {
-    margin: 1rem auto;
-    height: 90vh;
-    width: 100%;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-} 
+  margin: 1rem auto;
+  height: 90vh;
+  width: 100%;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.tooltip {
+  top: -5px;
+  color: #fff;
+  padding: 1px;
+  border: 0;
+
+  &::before {
+    display: none;
+  }
+}
+
+.village {
+  background-color: #355070;
+}
+
+.town {
+  background-color: #6D597A;
+}
+
+.city {
+  background-color: #EAAC8B;
+}
+
+.mountain {
+  background-color: #E56B6F;
+}
+
+.poi {
+  background-color: #B56576;  
+}

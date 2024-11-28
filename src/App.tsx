@@ -24,11 +24,7 @@ export function App() {
           <button onClick={() => setActiveTileServer(tileServers.stadia)}>Stadia Maps</button>
           <button onClick={() => setActiveTileServer(tileServers.openStreetMap)}>OpenStreetMap</button>
         </div>
-        <Map
-          center={[24.673088, 101.996663]}
-          zoom={3}
-          tileServer={activeTileServer}
-        />
+        <Map tileServer={activeTileServer} />
       </div>
     </>
   )
