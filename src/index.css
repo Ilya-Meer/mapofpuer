@@ -11,6 +11,12 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+
+  --village-colour: #355070;
+  --town-colour: #6D597A;
+  --city-colour: #EAAC8B;
+  --mountain-colour: #E56B6F;
+  --poi-colour: #B56576;
 }
 
 a {

@@ -1,0 +1,42 @@
+.legend {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+
+  @media (min-width: 1024px) {
+    flex-direction: row;
+    gap: 20px;
+  }
+}
+
+.legendItem {
+  display: flex;
+  align-items: center;
+}
+
+.legendColour {
+  width: 15px;
+  height: 15px;
+  border-radius: 2px;
+  margin-right: 5px;
+}
+
+.village {
+  background-color: var(--village-colour);
+}
+
+.town {
+  background-color: var(--town-colour);
+}
+
+.city {
+  background-color: var(--city-colour);
+}
+
+.mountain {
+  background-color: var(--mountain-colour);
+}
+
+.poi {
+  background-color: var(--poi-colour);
+}
