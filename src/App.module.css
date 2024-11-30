@@ -23,3 +23,20 @@
     flex-direction: row;
   }
 }
+
+.searchForm {
+  margin-top: 5px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.searchForm input {
+  margin: 0 5px;
+  padding: 5px 0;
+}
+
+.searchForm button {
+  padding: 5px 15px;
+  border-radius: 2px;
+}

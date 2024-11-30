@@ -11,6 +11,7 @@ import { LOCATION_TYPE } from '../../constants';
 
 interface MapProps {
   tileServer: TileServer;
+  locationSearch: string;
 }
 
 const classByType = {
@@ -135,7 +136,10 @@ const init = ({
   L.control.layers({}, overlays).addTo(map);
 }
 
-export function Map({ tileServer }: MapProps) {
+export function Map({
+  tileServer,
+  locationSearch
+}: MapProps) {
   const mapRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<L.Map | null>(null);
 
@@ -157,5 +161,18 @@ export function Map({ tileServer }: MapProps) {
     }
   }, [tileServer]);
 
-  return <div ref={mapRef} className={styles.mapContainer} />;
+  useEffect(() => {
+    const location = locations.find(l => l.name.toLowerCase() === locationSearch.toLowerCase())
+    if (location && location.coordinates) {
+      mapInstanceRef.current?.flyTo(location.coordinates, 12)
+    }
+  }, [locationSearch])
+
+  return (
+    <>
+      <div>
+      </div>
+      <div ref={mapRef} className={styles.mapContainer} />
+    </>
+  )
 }

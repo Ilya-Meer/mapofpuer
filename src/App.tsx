@@ -17,6 +17,13 @@ export function App() {
   }
 
   const [activeTileServer, setActiveTileServer] = useState<TileServer>(tileServers.stadia)
+  const [locationSearch, setLocationSearch] = useState('')
+  const [submittedLocationSearch, setSubmittedLocationSearch] = useState('')
+
+  const handleFormSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    setSubmittedLocationSearch(locationSearch)
+  }
 
   return (
     <>
@@ -31,7 +38,18 @@ export function App() {
             <button onClick={() => setActiveTileServer(tileServers.openStreetMap)}>OpenStreetMap</button>
           </div>
         </div>
-        <Map tileServer={activeTileServer} />
+        <form
+          className={styles.searchForm}
+          onSubmit={handleFormSubmit}
+        >
+          <label>Search location:</label>
+          <input type="text" value={locationSearch} onChange={(e) => setLocationSearch(e.target.value)}/>
+          <button type="submit">Go!</button>
+        </form>
+        <Map
+          tileServer={activeTileServer}
+          locationSearch={submittedLocationSearch}
+        />
       </div>
     </>
   )
