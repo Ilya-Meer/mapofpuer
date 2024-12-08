@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { renderToString } from 'react-dom/server';
-import L from 'leaflet';
+import L, { latLngBounds, LatLngTuple } from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import yunnan from '../../assets/yunnan.json';
 import styles from './Map.module.css';
@@ -66,6 +66,7 @@ const init = ({
   /////
   const baseLayer = L.tileLayer(tileServer.url, {
     maxZoom: 16,
+    minZoom: 5,
     attribution: tileServer.attribution
   }).addTo(map);
 
@@ -126,6 +127,11 @@ const init = ({
 
   // Fit map bounds to show all elements
   map.fitBounds(interactiveLayer.getBounds());
+
+  // Set max bounds to prevent panning out too far
+  const southWestBounds: LatLngTuple = [14.741718424285752, 90.23397190156585] // Bay of Bengal
+  const northEastBounds: LatLngTuple = [40.692716544998696, 121.29595027183755] // Yellow Sea
+  map.setMaxBounds(latLngBounds(southWestBounds, northEastBounds));
 
   // Add layer controls
   const overlays = {
