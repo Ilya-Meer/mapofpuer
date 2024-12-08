@@ -1,10 +1,12 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Map } from './components/Map'
 import { TileServer } from './types'
 import styles from './App.module.css'
 import Legend from './components/Legend'
 
 export function App() {
+  const [isStadiaAvailable, setIsStadiaAvailable] = useState(true);
+  
   const tileServers: Record<string, TileServer> = {
     stadia: {
       url: 'https://tiles.stadiamaps.com/tiles/alidade_smooth/{z}/{x}/{y}{r}.png',
@@ -20,6 +22,31 @@ export function App() {
   const [locationSearch, setLocationSearch] = useState('')
   const [submittedLocationSearch, setSubmittedLocationSearch] = useState('')
 
+  useEffect(() => {
+    const setStadiaUnavailable = () => {
+      setIsStadiaAvailable(false);
+      setActiveTileServer(tileServers.openStreetMap);
+    }
+
+    const checkStadiaAvailability = async () => {
+      try {
+        // Check if Stadia Maps is available by loading single tile
+        const singleTileResponse = await fetch('https://tiles.stadiamaps.com/tiles/alidade_smooth/0/0/0.png', {
+          method: 'HEAD',
+        });
+
+        if (!singleTileResponse.ok) {
+          setStadiaUnavailable()
+        }
+      } catch (error) {
+        // in case of network errors
+        setStadiaUnavailable()
+      }
+    };
+
+    checkStadiaAvailability();
+  }, []);
+
   const handleFormSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     setSubmittedLocationSearch(locationSearch)
@@ -34,8 +61,15 @@ export function App() {
             <Legend />
           </div>
           <div className={styles.buttonContainer}>
-            <button onClick={() => setActiveTileServer(tileServers.stadia)}>Stadia Maps</button>
-            <button onClick={() => setActiveTileServer(tileServers.openStreetMap)}>OpenStreetMap</button>
+            <button 
+              onClick={() => setActiveTileServer(tileServers.stadia)}
+              disabled={!isStadiaAvailable}
+            >
+              Stadia Maps {isStadiaAvailable ? '' : '(not available)'}
+            </button>
+            <button onClick={() => setActiveTileServer(tileServers.openStreetMap)}>
+              OpenStreetMap
+            </button>
           </div>
         </div>
         <form
