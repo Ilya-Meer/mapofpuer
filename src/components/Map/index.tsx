@@ -14,13 +14,13 @@ interface MapProps {
   locationSearch: string;
 }
 
-const classByType = {
+const classByType: Record<(typeof LOCATION_TYPE)[keyof typeof LOCATION_TYPE], string> = {
   [LOCATION_TYPE.VILLAGE]: styles.village,
   [LOCATION_TYPE.TOWN]: styles.town,
   [LOCATION_TYPE.CITY]: styles.city,
   [LOCATION_TYPE.MOUNTAIN]: styles.mountain,
   [LOCATION_TYPE.POI]: styles.poi,
-}
+};
 
 // Create a masked version of the GeoJSON to grey out the area outside of Yunnan
 const maskedGeoJSON: GeoJSON.FeatureCollection = {
@@ -112,18 +112,30 @@ const init = ({
   // Create a feature group for interactive elements
   const interactiveLayer = L.featureGroup().addTo(map);
 
-  // Add location markers
-  for (const location of locations) {
+  const locationLayers = locations.reduce<Record<string, L.FeatureGroup>>((acc, location) => {
     const popup = <Popup {...location} />
-    L.marker(location.coordinates)
+    const marker = L.marker(location.coordinates)
       .bindTooltip(location.name, {
         permanent: true,
         className: `${styles.tooltip} ${classByType[location.type]}`,
         direction: 'bottom'
       })
       .bindPopup(renderToString(popup))
-      .addTo(interactiveLayer);
-  }
+
+    if (!acc[location.type]) {
+      const layer = L.featureGroup().addTo(map)
+      acc[location.type] = layer
+      marker.addTo(layer);
+    } else {
+      const layer = acc[location.type]
+      marker.addTo(layer);
+    }
+
+    // Also add to the main interactive layer so that main layer can toggle visibility of all locations
+    marker.addTo(interactiveLayer)
+
+    return acc
+  }, {})
 
   // Fit map bounds to show all elements
   map.fitBounds(interactiveLayer.getBounds());
@@ -136,7 +148,8 @@ const init = ({
   // Add layer controls
   const overlays = {
     "Tile Layer": baseLayer,
-    "Interactive Elements": interactiveLayer
+    "All Markers": interactiveLayer,
+    ...locationLayers
   };
 
   L.control.layers({}, overlays).addTo(map);
